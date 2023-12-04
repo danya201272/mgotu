@@ -46,16 +46,19 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setSupportZoom(false);
         webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAllowFileAccessFromFileURLs(true);
         webView.setWebViewClient(new myWebViewclient());
         webView.loadUrl(url);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            swipeRefreshLayout.setRefreshing(true);
-            new Handler().postDelayed(() -> {
-                swipeRefreshLayout.setRefreshing(false);
-                webView.loadUrl(url);
-            },  3000);
-        });
+        swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
+        swipeRefreshLayout.setRefreshing(false); // Delete если надо свайп
+        // swipeRefreshLayout.setOnRefreshListener(() -> {
+        //    swipeRefreshLayout.setRefreshing(true);
+        //    new Handler().postDelayed(() -> {
+        //        swipeRefreshLayout.setRefreshing(false);
+        //        webView.loadUrl(url);
+        //    },  3000);
+        //});
         webView.setWebChromeClient(new WebChromeClient()
         {
             // For 3.0+ Devices (Start)
@@ -68,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 i.setType("image/*");
                 startActivityForResult(Intent.createChooser(i, "File Browser"), FILECHOOSER_RESULTCODE);
             }
-
-
             // For Lollipop 5.0+ Devices
             public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
             {
