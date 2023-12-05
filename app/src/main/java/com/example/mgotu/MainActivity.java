@@ -9,13 +9,13 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -52,25 +52,15 @@ public class MainActivity extends AppCompatActivity {
 
         swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
         swipeRefreshLayout.setRefreshing(false); // Delete если надо свайп
-        // swipeRefreshLayout.setOnRefreshListener(() -> {
-        //    swipeRefreshLayout.setRefreshing(true);
-        //    new Handler().postDelayed(() -> {
-        //        swipeRefreshLayout.setRefreshing(false);
-        //        webView.loadUrl(url);
-        //    },  3000);
+        //swipeRefreshLayout.setOnRefreshListener(() -> {
+        //swipeRefreshLayout.setRefreshing(true);
+        //new Handler().postDelayed(() -> {
+        //swipeRefreshLayout.setRefreshing(false);
+        //webView.reload();
+        //},  3000);
         //});
         webView.setWebChromeClient(new WebChromeClient()
         {
-            // For 3.0+ Devices (Start)
-            // onActivityResult attached before constructor
-            protected void openFileChooser(ValueCallback uploadMsg, String acceptType)
-            {
-                mUploadMessage = uploadMsg;
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.setType("image/*");
-                startActivityForResult(Intent.createChooser(i, "File Browser"), FILECHOOSER_RESULTCODE);
-            }
             // For Lollipop 5.0+ Devices
             public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
             {
@@ -95,17 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             }
-
-            //For Android 4.1 only
-            protected void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture)
-            {
-                mUploadMessage = uploadMsg;
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent, "File Browser"), FILECHOOSER_RESULTCODE);
-            }
-
             protected void openFileChooser(ValueCallback<Uri> uploadMsg)
             {
                 mUploadMessage = uploadMsg;
@@ -128,12 +107,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public static class myWebViewclient extends WebViewClient{
+    public class myWebViewclient extends WebViewClient{
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            view.loadUrl(request.getUrl().toString());
             CookieManager.getInstance().flush();
-            return false;
+            return true;
         }
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
