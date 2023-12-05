@@ -148,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
             mUploadMessage = null;
         }
     }
+    //@Override
+    //protected void onResume(){
+       // super.onResume();
+       // webView.reload();
+    //}
     private void checkDownloadPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Toast.makeText(MainActivity.this, "Дайте разрешение к файлам. В настройках приложения.", Toast.LENGTH_LONG).show();
