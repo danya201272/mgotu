@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(i, "File Chooser"), FILECHOOSER_RESULTCODE);
             }
         });
-
         webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
             request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype));
@@ -106,8 +105,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Скачивание...", Toast.LENGTH_SHORT).show();
         });
     }
-
-    public class myWebViewclient extends WebViewClient{
+    public static class myWebViewclient extends WebViewClient{
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             view.loadUrl(request.getUrl().toString());
