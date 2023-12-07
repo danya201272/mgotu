@@ -8,7 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,18 +15,20 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.PermissionRequest;
-import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,11 +37,10 @@ public class MainActivity extends AppCompatActivity {
     public ValueCallback<Uri[]> uploadMessage;
     public static final int REQUEST_SELECT_FILE = 100;
     private final static int FILECHOOSER_RESULTCODE = 1;
-    private Context c;
-    private boolean isConnected = true;
     SwipeRefreshLayout swipeRefreshLayout;
     String urlnow;
     String url = "https://ies.unitech-mo.ru/schedule";
+    public final boolean isConnected = true;
     String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestPermissions(permissions, 80);
-        c = this;
         CookieManager.getInstance().setAcceptCookie(true);
 
         webView = findViewById(R.id.web);
@@ -159,32 +158,35 @@ public class MainActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             view.loadUrl(request.getUrl().toString());
             CookieManager.getInstance().flush();
-            return true;
+            if (isConnected) {
+                return false;
+            } else {
+                webView.loadUrl("file:///android_asset/404.html");
+                return true;
+            }
         }
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             urlnow = webView.getUrl();
-            urlnow = Objects.requireNonNull(urlnow).split("\\?")[0];
         }
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (urlnow.equals("https://ies.unitech-mo.ru/studentplan") || urlnow.equals("https://ies.unitech-mo.ru/journal")) {
+            urlnow = Objects.requireNonNull(urlnow).split("\\?")[0];
+            if (urlnow.equals("https://ies.unitech-mo.ru/journal")) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
             }
         }
         @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            super.onReceivedSslError(view, handler, error);
-            handler.cancel();
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
+            webView.loadUrl("file:///android_asset/404.html");
         }
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-
         if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
             webView.goBack();
             return true;
