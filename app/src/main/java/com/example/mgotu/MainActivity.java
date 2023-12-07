@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
@@ -22,11 +23,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     WebView webView;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
     String urlnow;
     String url = "https://ies.unitech-mo.ru/schedule";
-    String[] permissions={
+    String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE",
@@ -63,12 +65,13 @@ public class MainActivity extends AppCompatActivity {
         } else
             Toast.makeText(getApplicationContext(), "Ошибка: Загрузки Фото", Toast.LENGTH_LONG).show();
     }
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermissions(permissions,80);
+        requestPermissions(permissions, 80);
         CookieManager.getInstance().setAcceptCookie(true);
 
         webView = findViewById(R.id.web);
@@ -78,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setSupportZoom(false);
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccessFromFileURLs(true);
-        webView.setWebViewClient(new myWebViewclient());
+        webView.getSettings().setSaveFormData (true);
+        webView.setWebViewClient(new WebViewclient());
         webView.loadUrl(url);
 
         swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
@@ -92,8 +96,26 @@ public class MainActivity extends AppCompatActivity {
         },  3000);
         });
         */
-        webView.setWebChromeClient(new WebChromeClient()
-        {
+        webView.setWebChromeClient(new WebChromeClient() {
+            View fullscreen = null;
+            @Override
+            public void onHideCustomView()
+            {
+                fullscreen.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+            }
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback)
+            {
+                webView.setVisibility(View.GONE);
+                if(fullscreen != null)
+                {
+                    ((FrameLayout)getWindow().getDecorView()).removeView(fullscreen);
+                }
+                fullscreen = view;
+                ((FrameLayout)getWindow().getDecorView()).addView(fullscreen, new FrameLayout.LayoutParams(-1, -1));
+                fullscreen.setVisibility(View.VISIBLE);
+            }
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -101,21 +123,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             // For Lollipop 5.0+ Devices
-            public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
-            {
+            public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
                 if (uploadMessage != null) {
                     uploadMessage.onReceiveValue(null);
                     uploadMessage = null;
                 }
-
                 uploadMessage = filePathCallback;
-
                 Intent intent = fileChooserParams.createIntent();
-                try
-                {
+                try {
                     startActivityForResult(intent, REQUEST_SELECT_FILE);
-                } catch (ActivityNotFoundException e)
-                {
+                } catch (ActivityNotFoundException e) {
                     uploadMessage = null;
                     Toast.makeText(getApplicationContext(), "Ошибка: Открытия проводника", Toast.LENGTH_LONG).show();
                     return false;
@@ -134,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Скачивание...", Toast.LENGTH_SHORT).show();
         });
     }
-    public class myWebViewclient extends WebViewClient{
+    public class WebViewclient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             view.loadUrl(request.getUrl().toString());
@@ -145,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             urlnow = webView.getUrl();
+            urlnow = Objects.requireNonNull(urlnow).split("\\?")[0];
         }
         @Override
         public void onPageFinished(WebView view, String url) {
@@ -180,10 +198,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==80)
-        {
-            if (grantResults[0]== PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this,"Права предоставлены",Toast.LENGTH_SHORT).show();
+        if (requestCode == 80) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Права предоставлены", Toast.LENGTH_SHORT).show();
             }
             /* else {
                 Toast.makeText(this,"Ошибка прав",Toast.LENGTH_SHORT).show();
