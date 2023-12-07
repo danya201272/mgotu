@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     public ValueCallback<Uri[]> uploadMessage;
     public static final int REQUEST_SELECT_FILE = 100;
     private final static int FILECHOOSER_RESULTCODE = 1;
+    private Context c;
+    private boolean isConnected = true;
     SwipeRefreshLayout swipeRefreshLayout;
     String urlnow;
     String url = "https://ies.unitech-mo.ru/schedule";
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestPermissions(permissions, 80);
+        c = this;
         CookieManager.getInstance().setAcceptCookie(true);
 
         webView = findViewById(R.id.web);
