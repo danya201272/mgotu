@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.webkit.CookieManager;
 import android.webkit.PermissionRequest;
 import android.webkit.URLUtil;
@@ -23,11 +24,11 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     String urlnow;
     String url = "https://ies.unitech-mo.ru/schedule";
     public final boolean isConnected = true;
+    RelativeLayout tv;
     String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             "android.permission.READ_MEDIA_IMAGES",
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.CAMERA"};
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -71,13 +74,15 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Ошибка: Загрузки Фото", Toast.LENGTH_LONG).show();
     }
 
-    @SuppressLint({"SetJavaScriptEnabled", "NonConstantResourceId"})
+    @SuppressLint({"SetJavaScriptEnabled", "NonConstantResourceId", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestPermissions(permissions, 80);
         CookieManager.getInstance().setAcceptCookie(true);
+        tv = findViewById(R.id.HideRelayLayoutId3);
+
 
         webView = findViewById(R.id.web);
         swipeRefreshLayout = findViewById(R.id.swipe);
@@ -86,39 +91,47 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setSupportZoom(false);
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccessFromFileURLs(true);
-        webView.getSettings().setSaveFormData (true);
+        webView.getSettings().setSaveFormData(true);
         webView.setWebViewClient(new WebViewclient());
         webView.loadUrl(url);
+
+        webView.setOnTouchListener((v, event) -> {
+                slideUp(tv);
+            return false;
+        });
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.bottom_raspis);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-                    switch (item.getItemId()) {
-                        case R.id.bottom_news:
-                            startActivity(new Intent(getApplicationContext(), NewsActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                        case R.id.bottom_journal:
-                            startActivity(new Intent(getApplicationContext(), JournalActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                        case R.id.bottom_raspis:
-                            return true;
-                        case R.id.bottom_chat:
-                            startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                        case R.id.bottom_profile:
-                            startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                    }
-                    return false;
+            switch (item.getItemId()) {
+                case R.id.bottom_news:
+                    startActivity(new Intent(getApplicationContext(), NewsActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+                case R.id.bottom_journal:
+                    startActivity(new Intent(getApplicationContext(), JournalActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+                case R.id.bottom_raspis:
+                    return true;
+                case R.id.bottom_chat:
+                    startActivity(new Intent(getApplicationContext(), ChatActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+                case R.id.bottom_profile:
+                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+            }
+            return false;
         });
+
+
         swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
         swipeRefreshLayout.setRefreshing(false); // Delete если надо свайп
         /*
@@ -132,30 +145,31 @@ public class MainActivity extends AppCompatActivity {
         */
         webView.setWebChromeClient(new WebChromeClient() {
             View fullscreen = null;
+
             @Override
-            public void onHideCustomView()
-            {
+            public void onHideCustomView() {
                 fullscreen.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
             }
+
             @Override
-            public void onShowCustomView(View view, CustomViewCallback callback)
-            {
+            public void onShowCustomView(View view, CustomViewCallback callback) {
                 webView.setVisibility(View.GONE);
-                if(fullscreen != null)
-                {
-                    ((FrameLayout)getWindow().getDecorView()).removeView(fullscreen);
+                if (fullscreen != null) {
+                    ((FrameLayout) getWindow().getDecorView()).removeView(fullscreen);
                 }
                 fullscreen = view;
-                ((FrameLayout)getWindow().getDecorView()).addView(fullscreen, new FrameLayout.LayoutParams(-1, -1));
+                ((FrameLayout) getWindow().getDecorView()).addView(fullscreen, new FrameLayout.LayoutParams(-1, -1));
                 fullscreen.setVisibility(View.VISIBLE);
             }
+
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     request.grant(request.getResources());
                 }
             }
+
             // For Lollipop 5.0+ Devices
             public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
                 if (uploadMessage != null) {
@@ -185,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Скачивание...", Toast.LENGTH_SHORT).show();
         });
     }
+
     public class WebViewclient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -197,12 +212,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             urlnow = webView.getUrl();
             urlnow = Objects.requireNonNull(urlnow).split("\\?")[0];
         }
+
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
@@ -211,12 +228,16 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
             }
+            tv.setVisibility(View.GONE);
+
         }
+
         @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             webView.loadUrl("file:///android_asset/404.html");
         }
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
@@ -225,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
     /*
     @Override
     protected void onResume(){
@@ -243,5 +265,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Ошибка прав",Toast.LENGTH_SHORT).show();
             }*/
         }
+    }
+    public void slideUp(RelativeLayout view) {
+        TranslateAnimation animate = new TranslateAnimation(0, 0,
+                view.getHeight(), 10);
+        animate.setDuration(2000);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+        view.setVisibility(View.VISIBLE);
     }
 }
