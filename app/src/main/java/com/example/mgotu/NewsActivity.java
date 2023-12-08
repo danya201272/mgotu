@@ -5,7 +5,6 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -92,27 +91,23 @@ public class NewsActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.bottom_news:
-                    return true;
+                    break;
                 case R.id.bottom_journal:
                     startActivity(new Intent(getApplicationContext(), JournalActivity.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     finish();
-                    return true;
+                    break;
                 case R.id.bottom_raspis:
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     finish();
-                    return true;
+                    break;
                 case R.id.bottom_chat:
                     startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     finish();
-                    return true;
+                    break;
                 case R.id.bottom_profile:
                     startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     finish();
-                    return true;
+                    break;
             }
             return false;
         });
@@ -197,14 +192,6 @@ public class NewsActivity extends AppCompatActivity {
             }
         }
         @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-        }
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-        }
-        @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
             webView.loadUrl("file:///android_asset/404.html");
         }
@@ -213,6 +200,7 @@ public class NewsActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
             webView.goBack();
+            webView.loadUrl("javascript:document.open();document.close();");
             return true;
         }
         return super.onKeyDown(keyCode, event);
