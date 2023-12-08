@@ -73,6 +73,7 @@ public class JournalActivity extends AppCompatActivity {
         requestPermissions(permissions, 80);
         CookieManager.getInstance().setAcceptCookie(true);
 
+
         webView = findViewById(R.id.web);
         swipeRefreshLayout = findViewById(R.id.swipe);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -89,25 +90,29 @@ public class JournalActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.bottom_journal);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.bottom_news:
-                    startActivity(new Intent(getApplicationContext(), NewsActivity.class));
-                    finish();
-                    break;
-                case R.id.bottom_journal:
-                    break;
-                case R.id.bottom_raspis:
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    finish();
-                    break;
-                case R.id.bottom_chat:
-                    startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                    finish();
-                    break;
-                case R.id.bottom_profile:
-                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                    finish();
-                    break;
+            int id = item.getItemId();
+            if(id == R.id.bottom_news) {
+                startActivity(new Intent(getApplicationContext(), NewsActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                return true;
+            }
+            if(id == R.id.bottom_journal) {
+                return true;
+            }
+            if(id == R.id.bottom_raspis) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                return true;
+            }
+            if(id == R.id.bottom_chat) {
+                startActivity(new Intent(getApplicationContext(), ChatActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                return true;
+            }
+            if(id == R.id.bottom_profile) {
+                startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                return true;
             }
             return false;
         });
@@ -204,6 +209,19 @@ public class JournalActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setSelectedItemId(R.id.bottom_journal);
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        if(webView != null){
+            webView.clearHistory();
+        }
     }
     /*
     @Override
