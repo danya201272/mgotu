@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_SELECT_FILE = 100;
     private final static int FILECHOOSER_RESULTCODE = 1;
     SwipeRefreshLayout swipeRefreshLayout;
-    String urlnow;
     String url = "https://ies.unitech-mo.ru/schedule";
     public final boolean isConnected = true;
     String[] permissions = {
@@ -82,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setSupportZoom(false);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccessFromFileURLs(true);
         webView.getSettings().setSaveFormData(true);
@@ -203,17 +203,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            urlnow = webView.getUrl();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (urlnow.equals("https://ies.unitech-mo.ru/journal")) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            } else {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-            }
         }
 
         @Override
