@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottom_news"
+        android:icon="@drawable/baseline_newspaper_24"
+        android:enabled="true"
+        android:title="Новости"/>
+
+    <item
+        android:id="@+id/bottom_journal"
+        android:icon="@drawable/baseline_book_24"
+        android:enabled="true"
+        android:title="Журнал"/>
+
+    <item
+        android:id="@+id/bottom_raspis"
+        android:icon="@drawable/baseline_access_time_filled_24"
+        android:enabled="true"
+        android:title="Расписание"/>
+
+    <item
+        android:id="@+id/bottom_chat"
+        android:icon="@drawable/baseline_chat_24"
+        android:enabled="true"
+        android:title="Чат"/>
+    <item
+        android:id="@+id/bottom_profile"
+        android:icon="@drawable/baseline_manage_accounts_24"
+        android:enabled="true"
+        android:title="Профиль"/>
+</menu>

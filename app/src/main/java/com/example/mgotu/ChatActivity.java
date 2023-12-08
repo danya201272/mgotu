@@ -1,40 +1,38 @@
 package com.example.mgotu;
 
-import android.annotation.SuppressLint;
-import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.view.KeyEvent;
-import android.view.View;
-import android.webkit.CookieManager;
-import android.webkit.PermissionRequest;
-import android.webkit.URLUtil;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.Toast;
+        import android.annotation.SuppressLint;
+        import android.app.DownloadManager;
+        import android.content.ActivityNotFoundException;
+        import android.content.Intent;
+        import android.content.pm.ActivityInfo;
+        import android.content.pm.PackageManager;
+        import android.graphics.Bitmap;
+        import android.net.Uri;
+        import android.os.Build;
+        import android.os.Bundle;
+        import android.os.Environment;
+        import android.view.KeyEvent;
+        import android.view.View;
+        import android.webkit.CookieManager;
+        import android.webkit.PermissionRequest;
+        import android.webkit.URLUtil;
+        import android.webkit.ValueCallback;
+        import android.webkit.WebChromeClient;
+        import android.webkit.WebResourceError;
+        import android.webkit.WebResourceRequest;
+        import android.webkit.WebView;
+        import android.webkit.WebViewClient;
+        import android.widget.FrameLayout;
+        import android.widget.Toast;
+        import androidx.annotation.NonNull;
+        import androidx.appcompat.app.AppCompatActivity;
+        import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+        import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+        import java.util.Objects;
 
-import java.util.Objects;
-
-public class MainActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
     WebView webView;
     private ValueCallback<Uri> mUploadMessage;
     public ValueCallback<Uri[]> uploadMessage;
@@ -42,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int FILECHOOSER_RESULTCODE = 1;
     SwipeRefreshLayout swipeRefreshLayout;
     String urlnow;
-    String url = "https://ies.unitech-mo.ru/schedule";
+    String url = "https://ies.unitech-mo.ru/um";
     public final boolean isConnected = true;
     String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == FILECHOOSER_RESULTCODE) {
             if (null == mUploadMessage)
                 return;
-            Uri result = intent == null || resultCode != MainActivity.RESULT_OK ? null : intent.getData();
+            Uri result = intent == null || resultCode != ChatActivity.RESULT_OK ? null : intent.getData();
             mUploadMessage.onReceiveValue(result);
             mUploadMessage = null;
         } else
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chat);
         requestPermissions(permissions, 80);
         CookieManager.getInstance().setAcceptCookie(true);
 
@@ -91,34 +89,36 @@ public class MainActivity extends AppCompatActivity {
         webView.loadUrl(url);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.bottom_raspis);
+        bottomNavigationView.setSelectedItemId(R.id.bottom_chat);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-                    switch (item.getItemId()) {
-                        case R.id.bottom_news:
-                            startActivity(new Intent(getApplicationContext(), NewsActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                        case R.id.bottom_journal:
-                            startActivity(new Intent(getApplicationContext(), JournalActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                        case R.id.bottom_raspis:
-                            return true;
-                        case R.id.bottom_chat:
-                            startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                        case R.id.bottom_profile:
-                            startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
-                            return true;
-                    }
-                    return false;
+            switch (item.getItemId()) {
+                case R.id.bottom_news:
+                    startActivity(new Intent(getApplicationContext(), NewsActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+                case R.id.bottom_journal:
+                    startActivity(new Intent(getApplicationContext(), JournalActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+                case R.id.bottom_raspis:
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+                case R.id.bottom_chat:
+                    return true;
+                case R.id.bottom_profile:
+                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    finish();
+                    return true;
+            }
+            return false;
         });
+
+
         swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
         swipeRefreshLayout.setRefreshing(false); // Delete если надо свайп
         /*
