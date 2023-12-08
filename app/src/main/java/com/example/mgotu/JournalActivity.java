@@ -94,7 +94,7 @@ public class JournalActivity extends AppCompatActivity {
             if(id == R.id.bottom_news) {
                 startActivity(new Intent(getApplicationContext(), NewsActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                return true;
+                finish();
             }
             if(id == R.id.bottom_journal) {
                 return true;
@@ -102,17 +102,17 @@ public class JournalActivity extends AppCompatActivity {
             if(id == R.id.bottom_raspis) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                return true;
+                finish();
             }
             if(id == R.id.bottom_chat) {
                 startActivity(new Intent(getApplicationContext(), ChatActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                return true;
+                finish();
             }
             if(id == R.id.bottom_profile) {
                 startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                return true;
+                finish();
             }
             return false;
         });
@@ -217,19 +217,12 @@ public class JournalActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.bottom_journal);
     }
     @Override
-    protected void onPause(){
-        super.onPause();
-        if(webView != null){
-            webView.clearHistory();
-        }
+    protected void onStop() {
+        super.onStop();
+        webView.clearHistory();
+        webView.clearFormData();
+        webView.clearCache(true);
     }
-    /*
-    @Override
-    protected void onResume(){
-       super.onResume();
-       webView.reload();
-    }
-    */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
