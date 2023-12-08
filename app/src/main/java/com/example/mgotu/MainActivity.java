@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.TranslateAnimation;
 import android.webkit.CookieManager;
 import android.webkit.PermissionRequest;
 import android.webkit.URLUtil;
@@ -24,7 +23,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,8 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     WebView webView;
@@ -45,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     String urlnow;
     String url = "https://ies.unitech-mo.ru/schedule";
     public final boolean isConnected = true;
-    RelativeLayout tv;
     String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -81,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestPermissions(permissions, 80);
         CookieManager.getInstance().setAcceptCookie(true);
-        tv = findViewById(R.id.HideRelayLayoutId3);
-
 
         webView = findViewById(R.id.web);
         swipeRefreshLayout = findViewById(R.id.swipe);
@@ -94,12 +87,6 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setSaveFormData(true);
         webView.setWebViewClient(new WebViewclient());
         webView.loadUrl(url);
-
-        webView.setOnTouchListener((v, event) -> {
-                slideUp(tv);
-            return false;
-        });
-
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.bottom_raspis);
@@ -217,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             urlnow = webView.getUrl();
-            urlnow = Objects.requireNonNull(urlnow).split("\\?")[0];
         }
 
         @Override
@@ -228,8 +214,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
             }
-            tv.setVisibility(View.GONE);
-
         }
 
         @Override
@@ -265,13 +249,5 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Ошибка прав",Toast.LENGTH_SHORT).show();
             }*/
         }
-    }
-    public void slideUp(RelativeLayout view) {
-        TranslateAnimation animate = new TranslateAnimation(0, 0,
-                view.getHeight(), 10);
-        animate.setDuration(2000);
-        animate.setFillAfter(true);
-        view.startAnimation(animate);
-        view.setVisibility(View.VISIBLE);
     }
 }
