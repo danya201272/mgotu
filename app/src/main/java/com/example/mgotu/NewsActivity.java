@@ -216,17 +216,9 @@ public class NewsActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
             webView.goBack();
-            webView.loadUrl("javascript:document.open();document.close();");
             return true;
         }
         return super.onKeyDown(keyCode, event);
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        webView.clearHistory();
-        webView.clearFormData();
-        webView.clearCache(true);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -241,6 +233,10 @@ public class NewsActivity extends AppCompatActivity {
         }
     }
     @Override
+    public void onStart(){
+        super.onStart();
+    }
+    @Override
     protected void onResume() {
         super.onResume();
         webView.onResume();
@@ -249,5 +245,20 @@ public class NewsActivity extends AppCompatActivity {
     public void onPause(){
         super.onPause();
         webView.onPause();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        webView.clearHistory();
+        webView.clearFormData();
+        webView.clearCache(true);
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        webView.clearHistory();
+        webView.clearFormData();
+        webView.clearCache(false);
+        webView.clearSslPreferences();
     }
 }
