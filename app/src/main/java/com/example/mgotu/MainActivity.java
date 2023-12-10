@@ -22,9 +22,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_SELECT_FILE = 100;
     private final static int FILECHOOSER_RESULTCODE = 1;
     SwipeRefreshLayout swipeRefreshLayout;
+
     String url = "https://ies.unitech-mo.ru/schedule";
     public final boolean isConnected = true;
     String[] permissions = {
@@ -91,27 +94,26 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if(id == R.id.bottom_news) {
-                startActivity(new Intent(getApplicationContext(), NewsActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             if(id == R.id.bottom_journal) {
                 startActivity(new Intent(getApplicationContext(), JournalActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             if(id == R.id.bottom_raspis) {
                 return true;
             }
             if(id == R.id.bottom_chat) {
                 startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             if(id == R.id.bottom_profile) {
                 startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             return false;
         });
@@ -219,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                     "})()");
         }
     }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
@@ -228,12 +229,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.bottom_raspis);
     }
     @Override
     protected void onStop() {
@@ -253,5 +248,15 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Ошибка прав",Toast.LENGTH_SHORT).show();
             }*/
         }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webView.onResume();
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        webView.onPause();
     }
 }

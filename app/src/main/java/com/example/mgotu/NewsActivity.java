@@ -96,23 +96,23 @@ public class NewsActivity extends AppCompatActivity {
             }
             if(id == R.id.bottom_journal) {
                 startActivity(new Intent(getApplicationContext(), JournalActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             if(id == R.id.bottom_raspis) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             if(id == R.id.bottom_chat) {
                 startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             if(id == R.id.bottom_profile) {
                 startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             return false;
         });
@@ -221,12 +221,6 @@ public class NewsActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
     @Override
-    protected void onResume() {
-        super.onResume();
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.bottom_news);
-    }
-    @Override
     protected void onStop() {
         super.onStop();
         webView.clearHistory();
@@ -244,5 +238,15 @@ public class NewsActivity extends AppCompatActivity {
                 Toast.makeText(this,"Ошибка прав",Toast.LENGTH_SHORT).show();
             }*/
         }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webView.onResume();
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        webView.onPause();
     }
 }
