@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
 
     String url = "https://ies.unitech-mo.ru/schedule";
-    public final boolean isConnected = true;
     String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -193,16 +192,15 @@ public class MainActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             view.loadUrl(request.getUrl().toString());
             CookieManager.getInstance().flush();
-            if (isConnected) {
-                return false;
-            } else {
-                webView.loadUrl("file:///android_asset/404.html");
-                return true;
-            }
+            return false;
         }
         @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-            webView.loadUrl("file:///android_asset/404.html");
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
+            if (error.getErrorCode() == WebViewClient.ERROR_HOST_LOOKUP || error.getErrorCode() == WebViewClient.ERROR_CONNECT || error.getErrorCode() == WebViewClient.ERROR_IO) {
+                webView.loadUrl("file:///android_asset/404.html");
+            } else {
+                super.onReceivedError(view, request, error);
+            }
         }
         @Override
         public void onPageFinished(WebView view, String url){
