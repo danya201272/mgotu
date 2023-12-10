@@ -205,6 +205,7 @@ public class NewsActivity extends AppCompatActivity {
             view.loadUrl("javascript:getValue()");
             webView.loadUrl("javascript:(function() { " +
                     "if (document.getElementById('footer')) {" +
+                    "    document.getElementById('footer').remove();" +
                     "    document.getElementById('header').remove();" +
                     "    document.getElementById('intro').remove();" +
                     "}" +

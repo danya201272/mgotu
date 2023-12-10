@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if(id == R.id.bottom_news) {
+                startActivity(new Intent(getApplicationContext(), NewsActivity.class));
                 finish();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
