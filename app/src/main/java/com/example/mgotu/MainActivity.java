@@ -199,10 +199,26 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }
-
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             webView.loadUrl("file:///android_asset/404.html");
+        }
+        @Override
+        public void onPageFinished(WebView view, String url){
+            view.loadUrl("javascript:getValue()");
+            webView.loadUrl("javascript:(function() { " +
+                    "document.getElementsByClassName('menu')[0].style.display='none';" +
+                    "document.getElementsByClassName('fl_left user_session_name')[0].style.display='none';" +
+                    "})()");
+            webView.evaluateJavascript("javascript:(function() { " +
+                    "var element = document.querySelector('a[href=\"/\"]'); " +
+                    "element.parentNode.removeChild(element); " +
+                    "})()", null);
+            webView.loadUrl("javascript:(function() { " +
+                    "if (document.getElementById('footer')) {" +
+                    "    document.getElementById('footer').remove();" +
+                    "}" +
+                    "})()");
         }
     }
 

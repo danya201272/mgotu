@@ -200,6 +200,16 @@ public class NewsActivity extends AppCompatActivity {
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
             webView.loadUrl("file:///android_asset/404.html");
         }
+        @Override
+        public void onPageFinished(WebView view, String url){
+            view.loadUrl("javascript:getValue()");
+            webView.loadUrl("javascript:(function() { " +
+                    "if (document.getElementById('footer')) {" +
+                    "    document.getElementById('header').remove();" +
+                    "    document.getElementById('intro').remove();" +
+                    "}" +
+                    "})()");
+        }
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
