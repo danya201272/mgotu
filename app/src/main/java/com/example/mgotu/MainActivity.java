@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -26,7 +27,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
     WebView webView;
@@ -36,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private final static int FILECHOOSER_RESULTCODE = 1;
     SwipeRefreshLayout swipeRefreshLayout;
     BottomNavigationView bottomNavigation;
-
     String url = "https://ies.unitech-mo.ru/schedule";
     String[] permissions = {
             "android.permission.ACCESS_DOWNLOAD_MANAGER",
@@ -71,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestPermissions(permissions, 80);
         CookieManager.getInstance().setAcceptCookie(true);
+        getWeatherDetails();
 
 
         webView = findViewById(R.id.web);
@@ -151,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 ((FrameLayout) getWindow().getDecorView()).addView(fullscreen, new FrameLayout.LayoutParams(-1, -1));
                 fullscreen.setVisibility(View.VISIBLE);
             }
-            public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
+            public boolean onShowFileChooser(WebView WebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
             {
                 if (uploadMessage != null) {
                     uploadMessage.onReceiveValue(null);
@@ -183,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Скачивание...", Toast.LENGTH_SHORT).show();
         });
     }
-
     public class WebViewclient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -263,5 +272,30 @@ public class MainActivity extends AppCompatActivity {
         webView.clearFormData();
         webView.clearCache(false);
         webView.clearSslPreferences();
+    }
+    public void getWeatherDetails() {
+        String tempUrl;
+        String city ="Королёв";
+        String country ="RU";
+        String urlweather = "https://api.openweathermap.org/data/2.5/weather";
+        String appid = "e53301e27efa0b66d05045d91b2742d3";
+        DecimalFormat df = new DecimalFormat("#");
+        tempUrl = urlweather + "?q=" + city + "," + country + "&appid=" + appid + "&units=metric";
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, tempUrl, response -> {
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    JSONObject jsonObjectMain = jsonResponse.getJSONObject("main");
+                    double temp = jsonObjectMain.getDouble("temp") ;
+                    double feelsLike = jsonObjectMain.getDouble("feels_like") ;
+                    Toast.makeText(getApplicationContext(), "Температура "+city+": "+df.format(temp)+"°C\n Ощущается как : "+df.format(feelsLike)+"°C", Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }, error -> {
+                Toast.makeText(getApplicationContext(), error.toString().trim(), Toast.LENGTH_SHORT).show();
+                Log.e("getWeatherDetails","City field can not be empty!");
+            });
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            requestQueue.add(stringRequest);
     }
 }
