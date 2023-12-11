@@ -6,18 +6,17 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.PermissionRequest;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -46,24 +45,22 @@ public class MainActivity extends AppCompatActivity {
             "android.permission.READ_MEDIA_IMAGES",
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.CAMERA"};
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (requestCode == REQUEST_SELECT_FILE) {
                 if (uploadMessage == null)
                     return;
                 uploadMessage.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
                 uploadMessage = null;
             }
-        } else if (requestCode == FILECHOOSER_RESULTCODE) {
+            else if (requestCode == FILECHOOSER_RESULTCODE) {
             if (null == mUploadMessage)
                 return;
             Uri result = intent == null || resultCode != MainActivity.RESULT_OK ? null : intent.getData();
             mUploadMessage.onReceiveValue(result);
             mUploadMessage = null;
-        } else
+            } else
             Toast.makeText(getApplicationContext(), "Ошибка: Загрузки Фото", Toast.LENGTH_LONG).show();
     }
 
@@ -85,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccessFromFileURLs(true);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webView.getSettings().setSaveFormData(true);
         webView.setWebViewClient(new WebViewclient());
         webView.loadUrl(url);
@@ -143,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                 fullscreen.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
             }
-
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 webView.setVisibility(View.GONE);
@@ -154,27 +151,22 @@ public class MainActivity extends AppCompatActivity {
                 ((FrameLayout) getWindow().getDecorView()).addView(fullscreen, new FrameLayout.LayoutParams(-1, -1));
                 fullscreen.setVisibility(View.VISIBLE);
             }
-
-            @Override
-            public void onPermissionRequest(final PermissionRequest request) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    request.grant(request.getResources());
-                }
-            }
-
-            // For Lollipop 5.0+ Devices
-            public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+            public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
+            {
                 if (uploadMessage != null) {
                     uploadMessage.onReceiveValue(null);
-                    uploadMessage = null;
                 }
+
                 uploadMessage = filePathCallback;
+
                 Intent intent = fileChooserParams.createIntent();
-                try {
+                try
+                {
                     startActivityForResult(intent, REQUEST_SELECT_FILE);
-                } catch (ActivityNotFoundException e) {
+                } catch (ActivityNotFoundException e)
+                {
                     uploadMessage = null;
-                    Toast.makeText(getApplicationContext(), "Ошибка: Открытия проводника", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Ошибка: Проводника", Toast.LENGTH_LONG).show();
                     return false;
                 }
                 return true;
