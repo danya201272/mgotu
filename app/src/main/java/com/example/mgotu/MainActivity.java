@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_SELECT_FILE = 100;
     private final static int FILECHOOSER_RESULTCODE = 1;
     SwipeRefreshLayout swipeRefreshLayout;
+    BottomNavigationView bottomNavigation;
 
     String url = "https://ies.unitech-mo.ru/schedule";
     String[] permissions = {
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Ошибка: Загрузки Фото", Toast.LENGTH_LONG).show();
     }
 
-    @SuppressLint({"SetJavaScriptEnabled", "NonConstantResourceId", "ClickableViewAccessibility"})
+    @SuppressLint({"SetJavaScriptEnabled", "NonConstantResourceId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,36 +89,40 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewclient());
         webView.loadUrl(url);
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.bottom_raspis);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if(id == R.id.bottom_news) {
-                startActivity(new Intent(getApplicationContext(), NewsActivity.class));
-                finish();
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-            if(id == R.id.bottom_journal) {
-                startActivity(new Intent(getApplicationContext(), JournalActivity.class));
-                finish();
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-            if(id == R.id.bottom_raspis) {
-                return true;
-            }
-            if(id == R.id.bottom_chat) {
-                startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                finish();
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-            if(id == R.id.bottom_profile) {
-                startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                finish();
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-            return false;
-        });
 
+        bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setSelectedItemId(R.id.bottom_raspis);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.bottom_news:
+                    webView.getSettings().setSupportZoom(false);
+                    webView.getSettings().setBuiltInZoomControls(false);
+                    webView.loadUrl("https://ies.unitech-mo.ru/");
+                    break;
+                case R.id.bottom_journal:
+                    webView.getSettings().setSupportZoom(true);
+                    webView.getSettings().setBuiltInZoomControls(true);
+                    webView.loadUrl("https://ies.unitech-mo.ru/studentplan");
+                    break;
+                case R.id.bottom_raspis:
+                    webView.getSettings().setSupportZoom(false);
+                    webView.getSettings().setBuiltInZoomControls(false);
+                    webView.loadUrl("https://ies.unitech-mo.ru/schedule");
+                    break;
+                case R.id.bottom_chat:
+                    webView.getSettings().setSupportZoom(false);
+                    webView.getSettings().setBuiltInZoomControls(false);
+                    webView.loadUrl("https://ies.unitech-mo.ru/um");
+                    break;
+                case R.id.bottom_profile:
+                    webView.getSettings().setSupportZoom(false);
+                    webView.getSettings().setBuiltInZoomControls(false);
+                    webView.loadUrl("https://ies.unitech-mo.ru/user");
+                    break;
+                default:
+            }
+            return true;
+        });
 
         swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
         swipeRefreshLayout.setRefreshing(false); // Delete если надо свайп
@@ -206,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
         public void onPageFinished(WebView view, String url){
             view.loadUrl("javascript:getValue()");
             webView.loadUrl("javascript:(function() { " +
-                    "document.getElementsByClassName('menu')[0].style.display='none';" +
                     "document.getElementsByClassName('fl_left user_session_name')[0].style.display='none';" +
                     "})()");
             webView.evaluateJavascript("javascript:(function() { " +
@@ -216,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             webView.loadUrl("javascript:(function() { " +
                     "if (document.getElementById('footer')) {" +
                     "    document.getElementById('footer').remove();" +
+                    "    document.getElementById('intro').remove();" +
                     "}" +
                     "})()");
         }
@@ -235,9 +240,6 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Права предоставлены", Toast.LENGTH_SHORT).show();
             }
-            /* else {
-                Toast.makeText(this,"Ошибка прав",Toast.LENGTH_SHORT).show();
-            }*/
         }
     }
     @Override
@@ -260,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
         webView.clearHistory();
         webView.clearFormData();
         webView.clearCache(true);
+        webView.clearSslPreferences();
     }
     @Override
     public void onDestroy(){
