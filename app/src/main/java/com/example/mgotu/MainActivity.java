@@ -204,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
             view.loadUrl("javascript:getValue()");
             webView.loadUrl("javascript:(function() { " +
                     "document.getElementsByClassName('fl_left user_session_name')[0].style.display='none';" +
+                    "document.getElementsByClassName('student_plan_info')[0].style.display='none';" +
+                    "document.getElementsByClassName('current_karantine fl_right')[0].style.display='none';" +
                     "})()");
             webView.evaluateJavascript("javascript:(function() { " +
                     "var element = document.querySelector('a[href=\"/\"]'); " +
