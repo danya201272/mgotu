@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -188,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             view.loadUrl(request.getUrl().toString());
-            CookieManager.getInstance().flush();
             return false;
         }
         @Override
@@ -201,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public void onPageFinished(WebView view, String url){
+            CookieManager.getInstance().flush();
+            CookieSyncManager.getInstance().sync();
             view.loadUrl("javascript:getValue()");
             webView.loadUrl("javascript:(function() { " +
                     "document.getElementsByClassName('fl_left user_session_name')[0].style.display='none';" +
@@ -237,10 +239,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     @Override
-    public void onStart(){
-        super.onStart();
-    }
-    @Override
     protected void onResume() {
         super.onResume();
         webView.onResume();
@@ -254,12 +252,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         webView.clearHistory();
-        webView.clearFormData();
         webView.clearCache(true);
-        webView.clearSslPreferences();
-    }
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
     }
 }
