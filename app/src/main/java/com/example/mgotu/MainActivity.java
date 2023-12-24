@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -201,8 +200,6 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public void onPageFinished(WebView view, String url){
-            CookieManager.getInstance().flush();
-            CookieSyncManager.getInstance().sync();
             view.loadUrl("javascript:getValue()");
             webView.loadUrl("javascript:(function() { " +
                     "document.getElementsByClassName('fl_left user_session_name')[0].style.display='none';" +
@@ -219,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     "    document.getElementById('intro').remove();" +
                     "}" +
                     "})()");
+            CookieManager.getInstance().flush();
         }
     }
     @Override
