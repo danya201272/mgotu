@@ -126,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setEnabled(false); // Delete если надо свайп
         swipeRefreshLayout.setRefreshing(false); // Delete если надо свайп
         /*
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-        swipeRefreshLayout.setRefreshing(true);
-        new Handler().postDelayed(() -> {
-        swipeRefreshLayout.setRefreshing(false);
-        webView.reload();
-        },  3000);
-        });
+         swipeRefreshLayout.setOnRefreshListener(() -> {
+         swipeRefreshLayout.setRefreshing(true);
+         new Handler().postDelayed(() -> {
+         swipeRefreshLayout.setRefreshing(false);
+         webView.reload();
+         },  3000);
+         });
         */
         webView.setWebChromeClient(new WebChromeClient() {
             View fullscreen = null;
@@ -187,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
     public class WebViewclient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            CookieManager.getInstance().flush();
             view.loadUrl(request.getUrl().toString());
             return false;
         }
@@ -216,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
                     "    document.getElementById('intro').remove();" +
                     "}" +
                     "})()");
-            CookieManager.getInstance().flush();
         }
     }
     @Override
