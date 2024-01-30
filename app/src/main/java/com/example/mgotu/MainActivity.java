@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
-            if (error.getErrorCode() == WebViewClient.ERROR_HOST_LOOKUP || error.getErrorCode() == WebViewClient.ERROR_CONNECT || error.getErrorCode() == WebViewClient.ERROR_IO) {
+            if (error.getErrorCode() == WebViewClient.ERROR_HOST_LOOKUP || error.getErrorCode() == WebViewClient.ERROR_CONNECT || error.getErrorCode() == WebViewClient.ERROR_IO || error.getErrorCode() == WebViewClient.ERROR_REDIRECT_LOOP) {
                 webView.loadUrl("file:///android_asset/404.html");
             } else {
                 super.onReceivedError(view, request, error);
