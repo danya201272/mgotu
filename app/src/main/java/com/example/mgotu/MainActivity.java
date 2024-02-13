@@ -192,14 +192,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
-            if (error.getErrorCode() == WebViewClient.ERROR_CONNECT) {
-                webView.loadUrl("file:///android_asset/404.html");
-            } else {
-                super.onReceivedError(view, request, error);
-            }
-        }
-        @Override
         public void onPageFinished(WebView view, String url){
             view.loadUrl("javascript:getValue()");
             webView.loadUrl("javascript:(function() { " +
